@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+    #compass{
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+<p>D reading<span id="dreading3"></span></p>
+<img src="https://lh3.googleusercontent.com/bGUeJS-wGdOnZNwGSv0Mxztth6hTaV6K5kMsysSLpaVbNnsC4ghu_Vb8qBmeCZ3Dne2H" width="100" height="100" id="compass">
+<script type="text/javascript">
+  let sensor = new Magnetometer();
+  let accelerometer = new Accelerometer({frequency: 60});
+
+  sensor.start();
+  accelerometer.start();
+
+  sensor.onreading = () => {
+    let sinAngle;
+    let cosAngle;
+
+    let Gx = accelerometer.x;
+    let Gy = accelerometer.y;
+    let Gz = accelerometer.z;
+
+    let Bx = sensor.x;
+    let By = sensor.y;
+    let Bz = sensor.z;
+
+    let DegToRad = (Math.PI / 180);
+    let RadToDeg = (180 / Math.PI);
+
+    let Phi = Math.atan2(Gy, Gz) * RadToDeg;
+    
+    sinAngle = Math.sin(Phi * DegToRad);
+    cosAngle = Math.cos(Phi * DegToRad);
+    let Bfy = By * cosAngle - Bz * sinAngle;
+    Bz = By * sinAngle + Bz * cosAngle;
+    Gz = Gy * sinAngle + Gz * cosAngle;
+
+    let The = Math.atan(-Gx / Gz) * RadToDeg;
+    sinAngle = Math.sin(The * DegToRad);
+    cosAngle = Math.cos(The * DegToRad);
+    let Bfx = Bx * cosAngle + Bz * sinAngle;
+    let Bfz = -Bx * sinAngle + Bz * cosAngle;
+
+    let Psi = Math.atan2(-Bfy, Bfx) * RadToDeg;
+
+    console.log('roll: ' + Phi);
+    console.log('pitch: ' + The);
+    console.log('yaw: ' + Psi);
+
+    if(Psi < 0) Psi = 360+ Psi;    
+    Psi = (Psi + 90) % 360
+
+    console.log('Angle: ' + Psi);
+
+    rotate = 360 - Psi;
+    document.getElementById('dreading3').innerHTML = rotate;
+    compass = document.getElementById('compass');
+    compass.style.transform = "rotate("+rotate+"deg)";
+  };
+
+  sensor.onerror = event => alert(event.error.name, event.error.message);
+
+</script>
+</body>
+</html>

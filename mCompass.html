@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+    #compass{
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+<img src="https://lh3.googleusercontent.com/bGUeJS-wGdOnZNwGSv0Mxztth6hTaV6K5kMsysSLpaVbNnsC4ghu_Vb8qBmeCZ3Dne2H" width="100" height="100" id="compass">
+<p>X reading<span id="xreading"></span></p>
+<p>Y reading<span id="yreading"></span></p>
+<p>Z reading<span id="zreading"></span></p>
+<p>Angle reading<span id="areading"></span></p>
+<script>
+let sensor = new Magnetometer();
+sensor.start();
+sensor.onreading = () => {
+  document.getElementById('xreading').innerHTML = sensor.x;
+  document.getElementById('yreading').innerHTML = sensor.y;
+  document.getElementById('zreading').innerHTML = sensor.z;
+  let x = sensor.x;
+  let y = sensor.y;
+
+  let angle = Math.atan2(y, x);;
+  angle = angle * (180 / Math.PI);
+  angle = angle + 90;
+  angle = (angle + 180) % 360
+  document.getElementById('areading').innerHTML = angle;
+  rotate = 360 - angle;
+  compass = document.getElementById('compass');
+  compass.style.transform = "rotate("+rotate+"deg)";
+};
+sensor.onerror = event => alert(event.error.name, event.error.message);
+</script>
+</body>
+</html>
